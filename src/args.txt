@@ -1,7 +1,0 @@
--v --value uint8_t 1 "values"
--d --debug bool true "debug mode"
-
--- start string "" "..."
-  -d 
--- stop
-  
