@@ -1,4 +1,7 @@
 #include <args.h>
+#include <cstdlib>
+#include <iostream>
+#include <stdexcept>
 
 int main(int argc, char **argv) {
   bool extra;
@@ -9,8 +12,14 @@ int main(int argc, char **argv) {
   auto flag_uint64(u64, 2, 'u', "", "xxxxxxxxxxxxx");
   auto flag_string(s, "xx", ' ', "ss", "xxxxxxxxxxxxx");
   auto flag_bool(h, false, 'h', "help", "xxxxxxxxxxxxx");
-  flag_parse(argc, argv);
   auto help = flag_help("Usage: exe [options] <output>");
+  try {
+    flag_parse(argc, argv);
+  } catch (std::runtime_error &e) {
+    std::cerr << e.what() << std::endl;
+    std::cout << help;
+    std::exit(1);
+  }
   if (h) {
     std::cout << help;
     std::exit(0);

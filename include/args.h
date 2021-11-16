@@ -3,8 +3,10 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstring>
+#include <exception>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -69,8 +71,9 @@ inline void __flag_set_int(std::vector<__flag_item>::iterator &ex,
     else
       *v = std::stoi(value);
   } catch (const std::exception &) {
-    std::cerr << "Invalid argument: " << arg << " " << value << std::endl;
-    std::exit(0);
+    std::ostringstream ss;
+    ss << "Invalid argument: " << arg << " " << value;
+    throw std::runtime_error(ss.str());
   }
 }
 
@@ -80,8 +83,9 @@ inline void __flag_set_double(std::vector<__flag_item>::iterator &ex,
     double *v = (double *)ex->value;
     *v = std::stod(value);
   } catch (const std::exception &) {
-    std::cerr << "Invalid argument: " << arg << " " << value << std::endl;
-    std::exit(0);
+    std::ostringstream ss;
+    ss << "Invalid argument: " << arg << " " << value;
+    throw std::runtime_error(ss.str());
   }
 }
 
@@ -98,8 +102,9 @@ inline void __flag_set_uint64(std::vector<__flag_item>::iterator &ex,
     else
       *v = std::stoull(value);
   } catch (const std::exception &) {
-    std::cerr << "Invalid argument: " << arg << " " << value << std::endl;
-    std::exit(0);
+    std::ostringstream ss;
+    ss << "Invalid argument: " << arg << " " << value;
+    throw std::runtime_error(ss.str());
   }
 }
 
@@ -119,15 +124,17 @@ inline void flag_parse(int argc, char **argv) {
             std::find_if(__flag_items.begin(), __flag_items.end(),
                          [key](__flag_item &i) { return i.full_name == key; });
         if (ex == __flag_items.end()) {
-          std::cerr << "Invalid argument: " << argv[i] << std::endl;
-          std::exit(0);
+          std::ostringstream ss;
+          ss << "Invalid argument: " << argv[i];
+          throw std::runtime_error(ss.str());
         }
 
         if (ex->type != __flag_type_bool && !value.size()) {
           auto j = i + 1;
           if (j == argc) {
-            std::cerr << "Invalid argument: " << argv[i] << std::endl;
-            std::exit(0);
+            std::ostringstream ss;
+            ss << "Invalid argument: " << argv[i];
+            throw std::runtime_error(ss.str());
           } else {
             value = std::string(argv[j]);
             next_value_used = true;
@@ -144,8 +151,9 @@ inline void flag_parse(int argc, char **argv) {
             } else if (value == "false" || value == "0") {
               *(bool *)ex->value = false;
             } else {
-              std::cerr << "Invalid argument: " << argv[i] << std::endl;
-              std::exit(0);
+              std::ostringstream ss;
+              ss << "Invalid argument: " << argv[i];
+              throw std::runtime_error(ss.str());
             }
           } else {
             *(bool *)ex->value = true;
@@ -169,15 +177,17 @@ inline void flag_parse(int argc, char **argv) {
         for (size_t j = 1; j < len; ++j) {
           auto &c = argv[i][j];
           if (c < 'A' || c > 'z' || (c > 'Z' && c < 'a')) {
-            std::cerr << "Invalid argument: " << argv[i] << std::endl;
-            std::exit(0);
+            std::ostringstream ss;
+            ss << "Invalid argument: " << argv[i];
+            throw std::runtime_error(ss.str());
           }
           auto ex =
               std::find_if(__flag_items.begin(), __flag_items.end(),
                            [c](__flag_item &i) { return i.short_name == c; });
           if (ex == __flag_items.end()) {
-            std::cerr << "Invalid argument: " << argv[i] << std::endl;
-            std::exit(0);
+            std::ostringstream ss;
+            ss << "Invalid argument: " << argv[i];
+            throw std::runtime_error(ss.str());
           }
 
           if (ex->type == __flag_type_bool) {
@@ -186,8 +196,9 @@ inline void flag_parse(int argc, char **argv) {
             next_value_used = true;
             auto j = i + 1;
             if (j == argc) {
-              std::cerr << "Invalid argument: " << argv[i] << std::endl;
-              std::exit(0);
+              std::ostringstream ss;
+              ss << "Invalid argument: " << argv[i];
+              throw std::runtime_error(ss.str());
             }
             auto value = std::string(argv[j]);
             switch (ex->type) {
