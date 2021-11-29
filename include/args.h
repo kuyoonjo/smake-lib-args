@@ -22,6 +22,7 @@ struct __flag_item {
   std::string full_name;
   std::string description;
   void *value;
+  bool *set;
 };
 
 static inline std::vector<__flag_item> __flag_items = {};
@@ -29,32 +30,37 @@ static inline std::vector<__flag_item> __flag_items = {};
 #define flag_bool(var_name, default_value, flag_short_name, flag_full_name,    \
                   flag_description)                                            \
   var_name = default_value;                                                    \
+  bool var_name##_is_set = false;                                              \
   __flag_items.push_back({__flag_type_bool, flag_short_name, flag_full_name,   \
-                          flag_description, &var_name})
+                          flag_description, &var_name, &var_name##_is_set})
 
 #define flag_int(var_name, default_value, flag_short_name, flag_full_name,     \
                  flag_description)                                             \
   var_name = (int)default_value;                                               \
+  bool var_name##_is_set = false;                                              \
   __flag_items.push_back({__flag_type_int, flag_short_name, flag_full_name,    \
-                          flag_description, &var_name})
+                          flag_description, &var_name, &var_name##_is_set})
 
 #define flag_double(var_name, default_value, flag_short_name, flag_full_name,  \
                     flag_description)                                          \
   var_name = (double)default_value;                                            \
+  bool var_name##_is_set = false;                                              \
   __flag_items.push_back({__flag_type_double, flag_short_name, flag_full_name, \
-                          flag_description, &var_name})
+                          flag_description, &var_name, &var_name##_is_set})
 
 #define flag_uint64(var_name, default_value, flag_short_name, flag_full_name,  \
                     flag_description)                                          \
   var_name = (uint64_t)default_value;                                          \
+  bool var_name##_is_set = false;                                              \
   __flag_items.push_back({__flag_type_uint64, flag_short_name, flag_full_name, \
-                          flag_description, &var_name})
+                          flag_description, &var_name, &var_name##_is_set})
 
 #define flag_string(var_name, default_value, flag_short_name, flag_full_name,  \
                     flag_description)                                          \
   var_name = std::string(default_value);                                       \
+  bool var_name##_is_set = false;                                              \
   __flag_items.push_back({__flag_type_string, flag_short_name, flag_full_name, \
-                          flag_description, &var_name})
+                          flag_description, &var_name, &var_name##_is_set})
 
 static inline std::vector<std::string> flag_args;
 
@@ -158,18 +164,23 @@ inline void flag_parse(int argc, char **argv) {
           } else {
             *(bool *)ex->value = true;
           }
+          *ex->set = true;
         } break;
         case __flag_type_int: {
           __flag_set_int(ex, value, argv[i]);
+          *ex->set = true;
         } break;
         case __flag_type_double: {
           __flag_set_double(ex, value, argv[i]);
+          *ex->set = true;
         } break;
         case __flag_type_uint64: {
           __flag_set_uint64(ex, value, argv[i]);
+          *ex->set = true;
         } break;
         case __flag_type_string: {
           *(std::string *)ex->value = value;
+          *ex->set = true;
         } break;
         }
 
@@ -192,6 +203,7 @@ inline void flag_parse(int argc, char **argv) {
 
           if (ex->type == __flag_type_bool) {
             *(bool *)ex->value = true;
+            *ex->set = true;
           } else {
             next_value_used = true;
             auto j = i + 1;
@@ -204,15 +216,19 @@ inline void flag_parse(int argc, char **argv) {
             switch (ex->type) {
             case __flag_type_int: {
               __flag_set_int(ex, value, argv[i]);
+              *ex->set = true;
             } break;
             case __flag_type_double: {
               __flag_set_double(ex, value, argv[i]);
+              *ex->set = true;
             } break;
             case __flag_type_uint64: {
               __flag_set_uint64(ex, value, argv[i]);
+              *ex->set = true;
             } break;
             case __flag_type_string: {
               *(std::string *)ex->value = value;
+              *ex->set = true;
             } break;
             }
           }

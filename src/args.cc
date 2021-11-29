@@ -27,10 +27,10 @@ int main(int argc, char **argv) {
   for (auto arg : flag_args)
     std::cout << arg << std::endl;
 
-  std::cout << "Verbose mode is " << (verbose ? "ON" : "OFF") << std::endl;
-  std::cout << "Extra mode is " << (extra ? "ON" : "OFF") << std::endl;
-  std::cout << "n: " << number << std::endl;
-  std::cout << "d: " << dv << std::endl;
-  std::cout << "u: " << u64 << std::endl;
-  std::cout << "s: " << s << std::endl;
+  std::cout << (verbose_is_set ? "set ": "not set ") << "Verbose mode is " << (verbose ? "ON" : "OFF") << std::endl;
+  std::cout << (extra_is_set ? "set ": "not set ") << "Extra mode is " << (extra ? "ON" : "OFF") << std::endl;
+  std::cout << (number_is_set ? "set ": "not set ") << "n: " << number << std::endl;
+  std::cout << (dv_is_set ? "set ": "not set ") << "d: " << dv << std::endl;
+  std::cout << (u64_is_set ? "set ": "not set ") << "u: " << u64 << std::endl;
+  std::cout << (s_is_set ? "set ": "not set ") << "s: " << s << std::endl;
 }
